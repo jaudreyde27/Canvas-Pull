@@ -17,16 +17,21 @@ from pathlib import Path
 
 CANVAS_BASE = "https://canvas.stanford.edu/api/v1"
 TOKEN = os.environ.get("CANVAS_TOKEN", "")
-COURSE_ID = os.environ.get("CANVAS_COURSE_ID", "")
 MODULE_FILTER = os.environ.get("MODULE_FILTER", "").strip()
 OUTPUT_DIR = Path("downloads")
 
 if not TOKEN:
     print("ERROR: CANVAS_TOKEN environment variable is not set.")
     sys.exit(1)
-if not COURSE_ID:
+
+_raw_course_id = os.environ.get("CANVAS_COURSE_ID", "").strip()
+if not _raw_course_id:
     print("ERROR: CANVAS_COURSE_ID environment variable is not set.")
     sys.exit(1)
+
+# Accept either a bare ID ("220228") or a full URL ("https://canvas.stanford.edu/courses/220228")
+_match = re.search(r"/courses/(\d+)", _raw_course_id)
+COURSE_ID = _match.group(1) if _match else _raw_course_id
 
 HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 
