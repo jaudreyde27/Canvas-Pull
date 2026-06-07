@@ -1,0 +1,85 @@
+name: Pull Canvas Files + Generate Study Guide
+
+on:
+  workflow_dispatch:
+    inputs:
+      course_id:
+        description: "Canvas course ID or full course URL"
+        required: true
+        type: string
+      course_name:
+        description: "Course name (used in the study guide title)"
+        required: true
+        type: string
+      module_filter:
+        description: "Optional: only download modules whose name contains this text"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  pull:
+    name: Download course files from Canvas
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Pull files from Canvas
+        env:
+          CANVAS_TOKEN: ${{ secrets.CANVAS_TOKEN }}
+          CANVAS_COURSE_ID: ${{ inputs.course_id }}
+          MODULE_FILTER: ${{ inputs.module_filter }}
+        run: python pull_canvas.py
+
+      - name: Upload canvas files
+        uses: actions/upload-artifact@v4
+        with:
+          name: canvas-downloads
+          path: downloads/
+          if-no-files-found: warn
+
+  synthesize:
+    name: Generate study guide
+    runs-on: ubuntu-latest
+    needs: pull
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download canvas files
+        uses: actions/download-artifact@v4
+        with:
+          name: canvas-downloads
+          path: downloads/
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-synthesize.txt
+
+      - name: Generate study guide
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          COURSE_NAME: ${{ inputs.course_name }}
+        run: python synthesize.py
+
+      - name: Upload study guide
+        uses: actions/upload-artifact@v4
+        with:
+          name: study-guide
+          path: study_guide.md
+          retention-days: 90
