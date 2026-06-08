@@ -77,9 +77,12 @@ jobs:
           COURSE_NAME: ${{ inputs.course_name }}
         run: python synthesize.py
 
+      - name: Convert to Word document
+        run: pandoc study_guide.md -o study_guide.docx
+
       - name: Upload study guide
         uses: actions/upload-artifact@v4
         with:
           name: study-guide
-          path: study_guide.md
+          path: study_guide.docx
           retention-days: 90
