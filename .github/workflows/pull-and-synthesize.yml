@@ -78,7 +78,7 @@ jobs:
         run: python synthesize.py
 
       - name: Convert to Word document
-        run: pandoc study_guide.md -o study_guide.docx
+        run: pandoc study_guide.md -o study_guide.docx --reference-doc=template.docx
 
       - name: Upload study guide
         uses: actions/upload-artifact@v4
