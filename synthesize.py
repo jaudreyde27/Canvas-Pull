@@ -55,10 +55,12 @@ SECTION STRUCTURE — follow this order strictly for every section:
 4. Optionally close with key definitions if they add precision — but definitions should NEVER open a section.
 
 ORGANIZATION:
-- Organize sections CHRONOLOGICALLY following the course session order. Do not group by theme if it
-  breaks the session flow. Files are named with session numbers — use those as the primary ordering signal.
-- When additional files (frameworks, formulas, case studies) relate to a session's topic, incorporate
-  them into that session's section rather than appending them at the end.
+- Organize sections CHRONOLOGICALLY following the order topics were introduced in the course.
+  Use the session numbers in the file names only as a sequencing signal — do NOT reference session
+  numbers in the guide itself, and do NOT label sections by session (e.g. no "Session 3-4: Little's Law").
+- If a concept spans multiple sessions, consolidate it into one cohesive section with a clean topic title.
+- When supplementary files (frameworks, formulas, case studies) relate to a topic, weave them into
+  that topic's section rather than appending them at the end.
 
 EXAMPLES — mandatory format:
 - Every example must include a one-sentence explanation of HOW the concept applies, not just a name.
