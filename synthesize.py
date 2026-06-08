@@ -43,61 +43,88 @@ client = anthropic.Anthropic(api_key=API_KEY)
 # ── Format description (condensed from user's example study guide) ──────────
 
 FORMAT_DESCRIPTION = """
-Structure the study guide EXACTLY like this:
+This is a personal reference guide — NOT an exam prep guide. The reader is someone who took the course
+and wants a rich, conceptual reminder of what they learned. Write it accordingly: no exam tips, no
+"exam note" callouts, no exam framing of any kind.
 
-# [COURSE NAME] — Study Guide
+SECTION STRUCTURE — follow this order strictly for every section:
+1. Open by explaining the concept in plain language — what is it, why does it matter, what problem does it solve?
+   Use real examples woven into the explanation (not listed in brackets at the end).
+2. Once the concept is fully established, introduce any sub-frameworks or nuances.
+3. Only after the concept is fully flushed out should you introduce equations or technical specifics.
+4. Optionally close with key definitions if they add precision — but definitions should NEVER open a section.
 
-## 1. [Topic / Module Name]
+ORGANIZATION:
+- Organize sections CHRONOLOGICALLY following the course session order. Do not group by theme if it
+  breaks the session flow. Files are named with session numbers — use those as the primary ordering signal.
+- When additional files (frameworks, formulas, case studies) relate to a session's topic, incorporate
+  them into that session's section rather than appending them at the end.
 
-### Core Definitions
-**Key Term**: "Optional quoted framing." Full definition — what it is, how it's calculated, what it means strategically.
+EXAMPLES — mandatory format:
+- Every example must include a one-sentence explanation of HOW the concept applies, not just a name.
+- WRONG: "Cost/Performance Leadership — efficiency and scale as primary moat. Example: [Toyota, Walmart]"
+- RIGHT: "Cost/Performance Leadership — efficiency and scale as primary moat. Toyota achieves this by
+  eliminating waste at every production step so that quality and low cost reinforce each other rather
+  than trade off; Walmart does it through distribution scale that lets it undercut rivals on price
+  while maintaining margins."
 
-**Another Term**: Definition with any critical distinctions inline.
+DEPTH AND RICHNESS:
+- Each section should paint a full picture: what the concept is, why it exists, how it works in practice,
+  what the key tensions or tradeoffs are, and where it breaks down or gets complicated.
+- Do not reduce concepts to a bullet list. Use prose where it earns its place, especially when explaining
+  WHY something works the way it does.
+- Capture the intellectual richness of the source material — the mechanisms, the edge cases, the
+  counterintuitive insights.
 
-Key distinction: [clarify how two related concepts differ — use "NOT" for emphasis]
-
-### [Sub-concept or Framework Name]
-- Bullet for a key point or driver
-- Bullet using arrow notation for causal relationships: Low X → high Y
-- Bullet with an inline example. Example: [real-world case in brackets]
-
-**Exam note**: [exam-specific guidance, traps, or required approach — include whenever material suggests a testable nuance]
-
-### [Another Sub-concept]
-(repeat pattern)
-
-## 2. [Next Topic]
-(repeat)
-
-───
 STYLE RULES:
 - Bold every key term on first use
-- Arrow notation (→) for all causal / directional relationships
+- Arrow notation (→) for causal relationships
 - "Key distinction:" prefix for clarifications between commonly confused concepts
-- "Exam note:" / "Exam trap:" / "Exam approach:" callouts whenever the material suggests a testable nuance
-- Inline examples in brackets: Example: [...]
-- Keep every bullet tight — one idea per line, no filler
 - Number all top-level sections sequentially (1, 2, 3 …)
+- NO exam notes, exam tips, exam traps, or any exam framing whatsoever
 """
 
 FORMAT_EXAMPLE = """
-EXAMPLE (from a different course — match this density and style exactly):
+EXAMPLE OF THE TARGET STYLE (from a different course — match this depth, flow, and richness):
 
-## 1. Value Creation & Value Capture
+## 3. Competitive Positioning & Moats
 
-### Core Definitions
-**Value Creation**: "Making the pie bigger." The total surplus generated in a transaction, calculated as the gap between the Buyer's Willingness to Pay (WTP) and the Supplier's Opportunity Cost (OC).
+The central challenge for any firm is not just creating value — it is keeping it. A firm that creates
+enormous value but operates in a market with perfect competition will price down to cost and capture
+nothing for itself. **Positioning advantage** is the mechanism by which firms reduce the price pressure
+they face, not by negotiating harder, but by finding a market position where direct comparison to
+rivals becomes harder for buyers to make.
 
-**Value Capture**: "Claiming your slice." Retaining a share of the surplus as profit by overcoming rivalry and vertical bargaining power.
+The intuition is geographic before it is strategic: two coffee shops on opposite sides of a city do not
+compete with each other the way two shops on the same block do. Walmart understood this when it expanded
+into rural towns too small to support two discount retailers — by being first into markets where a second
+entrant was economically unviable, it locked in a position before competition could arrive.
 
-Key distinction: Value creation and value capture are NOT the same thing. Price changes and competitive dynamics affect value capture — not value creation.
+**Product differentiation** works on the same principle but along taste rather than geography. When
+AbInBev tries to compete with craft beer, it runs into a perception problem: even if it brews a
+technically similar product, customers who value authenticity and local identity see it as a fundamentally
+different (and inferior) substitute. The differentiation is as much about story and identity as
+about the liquid in the glass.
 
-### Cost-Quality Frontier
-- The frontier is defined by firms with the best cost/quality tradeoffs — being inside it is a real competitive disadvantage
-- Two approaches: raise perceived quality (↑ WTP) or reduce cost (↓ OC)
-- More expensive does NOT mean more value captured; lowest cost does NOT either — both are creation, not capture
+### What Protects a Position — Moats
 
-**Exam note**: When a new entrant matches an incumbent's position exactly, price competition begins immediately — the overlap is total.
+A positioning advantage is only durable if something prevents rivals from copying it. High returns
+attract entry; without a barrier, the advantage erodes. The most important moats are:
+
+**Economies of scale** operate when fixed costs are large relative to variable costs, so that the firm
+already at scale can produce at a cost that makes entry irrational. The key metric is the ratio of
+Minimum Efficient Scale to total market size — when one firm's MES is close to the whole market,
+a second firm simply cannot reach the same cost structure. This is why small cities support only one
+bike-share operator while large cities can sustain several.
+
+**Network effects** create a self-reinforcing dynamic where each new user increases the value of
+the product for every existing user. An entrant without an installed base faces a value creation
+disadvantage before the first price negotiation even begins.
+
+Key distinction: A product going viral is NOT the same as a product having network effects. Poppi
+beverage spread through social media — but more people buying Poppi does not make Poppi better for
+any individual buyer. TikTok, by contrast, becomes genuinely more valuable as more creators join,
+because each new creator adds content that increases time-on-platform for everyone else.
 """
 
 
@@ -141,28 +168,28 @@ def extract_key_points(path: Path) -> str:
 
     print(f"  → {name}")
 
+    extraction_instructions = (
+        "Extract comprehensive notes from this course material. For each concept capture:\n"
+        "- The core idea in plain language — what it is and why it matters\n"
+        "- The mechanisms and logic behind it (not just what, but why and how)\n"
+        "- Any formulas or equations, clearly labeled, with what each variable means\n"
+        "- Real-world examples including a brief explanation of how the concept applies\n"
+        "- Key tensions, tradeoffs, or counterintuitive insights\n"
+        "- How this topic connects to other topics in the material\n"
+        "Preserve all terminology exactly. Be thorough — capture the richness, not just the surface.\n"
+        "Note the session number if visible in the file name or content, as it will be used for ordering.\n"
+    )
+
     if suffix == ".pdf":
         text = extract_pdf_text(path)
         content = [{"type": "text", "text": (
-            f"Course file: '{name}'\n\n"
-            "Extract every key concept, definition, framework, formula, and important point "
-            "from the text below as comprehensive notes.\n"
-            "- Preserve all terminology exactly\n"
-            "- Include any instructor emphasis or exam tips\n"
-            "- Group related ideas together\n"
-            "- Be thorough — nothing testable should be omitted\n\n"
-            f"{text}"
+            f"Course file: '{name}'\n\n{extraction_instructions}\n\n{text}"
         )}]
 
     elif suffix in {".pptx", ".ppt"}:
         text = extract_pptx_text(path)
         content = [{"type": "text", "text": (
-            f"Course slide deck: '{name}'\n\n"
-            "Extract every key concept, definition, framework, and important point "
-            "from the slide text below.\n"
-            "- Preserve all terminology exactly\n"
-            "- Group by topic/slide section\n\n"
-            f"{text}"
+            f"Course slide deck: '{name}'\n\n{extraction_instructions}\n\n{text}"
         )}]
 
     elif suffix in image_exts:
@@ -170,9 +197,7 @@ def extract_key_points(path: Path) -> str:
         content = [
             {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": img_data}},
             {"type": "text", "text": (
-                f"This is a course slide/image: '{name}'. "
-                "Extract all key concepts, definitions, frameworks, and important points visible. "
-                "Preserve all terminology exactly. Format as grouped bullet points."
+                f"This is a course slide/image: '{name}'. {extraction_instructions}"
             )},
         ]
     else:
@@ -201,16 +226,22 @@ def synthesize(all_notes: list[tuple[str, str]]) -> str:
         combined = combined[:150000] + "\n\n[... additional material truncated for context limits ...]"
 
     prompt = (
-        f'You are creating a comprehensive study guide for "{COURSE_NAME}".\n\n'
+        f'You are creating a comprehensive personal reference guide for "{COURSE_NAME}".\n\n'
         f"{FORMAT_DESCRIPTION}\n\n"
         f"{FORMAT_EXAMPLE}\n\n"
-        "Now synthesize the course notes below into a complete study guide in that exact style.\n"
-        "Requirements:\n"
-        "- Organize content into logical numbered sections by topic\n"
-        "- Bold every key term on first use\n"
-        "- Include Exam notes wherever the material suggests testable nuances\n"
-        "- Be comprehensive but tight — every sentence earns its place\n"
-        "- Do not repeat content; consolidate when the same idea appears in multiple files\n\n"
+        "Now synthesize the course notes below into a complete study guide following those guidelines exactly.\n\n"
+        "Critical requirements:\n"
+        "- CHRONOLOGICAL ORDER: Use the session numbers in the source file names (Session 1, Session 2, etc.)\n"
+        "  as your primary ordering signal. Supplementary files (formulas, frameworks, case studies) should\n"
+        "  be woven into whichever session section they belong to — not appended at the end.\n"
+        "- CONCEPT BEFORE TECHNICAL: For every topic, fully explain what it is and why it matters in plain\n"
+        "  language first. Only introduce equations, formulas, or calculations after the concept is established.\n"
+        "- RICH EXAMPLES: Every example must include a one-sentence explanation of how the concept applies\n"
+        "  to that specific company or situation — never just a name in brackets.\n"
+        "- DEPTH: Do not flatten concepts into thin bullet lists. Capture the mechanisms, the tensions,\n"
+        "  the counterintuitive insights, and the edge cases. This guide should feel intellectually rich.\n"
+        "- NO EXAM FRAMING: No exam notes, exam tips, exam traps, or any exam language whatsoever.\n"
+        "- Do not repeat content; consolidate when the same idea appears in multiple files.\n\n"
         "COURSE NOTES:\n\n"
         f"{combined}"
     )
